@@ -1,15 +1,16 @@
 from scedules import getCalenderByPin ,FindRecordByDistrict,getCentersByPin
 from datetime import timedelta,datetime
+import csv
 
 
-def getCalenderAvailability(pin=None,state=None,district=None,from_date=None,min_age=None):
+def _getCalenderAvailability(pin=None,state=None,district=None,from_date=None,min_age=None,dose=None):
     try:
         if not from_date:
             from_date = datetime.now().date()
         else:
             from_date = datetime.strptime(from_date,'%d-%m-%Y').date()
             if (from_date - datetime.now().date()).days < 0:
-                raise Exception('\nProvidede date cannot be in past ,should be from today')
+                raise Exception('\n\n[++] Providede date cannot be in past ,should be from today')
     except ValueError as e:
         raise ValueError(f"\n{e}   --- \n\n[+][+]PLease provide an proper date format in dd-mm-yy")
 
@@ -29,24 +30,61 @@ def getCalenderAvailability(pin=None,state=None,district=None,from_date=None,min
         else:
             break
         c -=1
-    # import pprint
-    avaialble_dict = {}
+    detailed_report = []
+    brief_info = {}
     for i in center_list:
         for j in i['sessions']:
-            if j['available_capacity'] > 0 and (min_age ==None  or j['min_age_limit'] == min_age):
-                avaialble_dict.setdefault(j['date'],[]).append({"center_name":i['name'],"center_id":i['center_id'],"address":i['address'],
-                "vaccine":j['vaccine'],"dose1":j['available_capacity_dose1'],"dose2":j['available_capacity_dose2'],"min_age_limit":j['min_age_limit'],
-                "fee_type":i['fee_type'],"available_capacity":j["available_capacity"],'slots':j["slots"]})
-                
+            if j['available_capacity'] > 0 and (min_age ==None  or j['min_age_limit'] == min_age) and (dose == None or j[f'available_capacity_dose{dose}']>0):
+                detailed_report.append({"center_name":i['name'],"center_id":i['center_id'],"date":j['date'],"address":i['address'],
+                "vaccine_type":j['vaccine'],"dose1":j['available_capacity_dose1'],"dose2":j['available_capacity_dose2'],"min_age_limit":j['min_age_limit'],
+                "fee_type":i['fee_type'],"available_capacity":j["available_capacity"],'slots':str(j["slots"])})
+                brief_info[j['date']] = brief_info.get(j['date'],0)+1
     del center_list
-    # pprint.pprint(avaialble_dict)
-    # pprint.pprint(center_list)
-    print (f"Vaccination available for dates {avaialble_dict.keys()}")
-    return avaialble_dict
+    return detailed_report,brief_info
 
 
-if __name__ == '__main__':
+def _print_and_generate_report(data,v):
+    columun_name = ['center_name', 'center_id','date','vaccine_type', 'dose1', 'dose2', 'min_age_limit', 'fee_type', 'available_capacity', 'slots','address']
+    if len(data) > 0:
+        print(f'\nAbailable for the dates and number of centes : - {list(zip(v.keys(),v.values()))}')
+        print('\nGenerating complete report-------------\n')
+        with open('detailed_report.csv','w') as fd:
+            writer = csv.DictWriter(fd,fieldnames=columun_name)
+            writer.writeheader()
+            for row in data:
+                writer.writerow(row)
+    else:
+        print("\n\nNO centers found for the provided date.")
 
-    # getCalenderAvailability(state='karnataka',district='bangalore urban',from_date='23-5-2021')
-    getCalenderAvailability(pin=110001,from_date='23-5-2021')
+def monitorAvailabitily(**kwargs):
+    import hashlib
+    from time import sleep
+    prev_hash = ""
+    try:
+        while True:
+            details, _ = _getCalenderAvailability(**kwargs)
+            curr_hex = hashlib.md5(str(details).encode()).hexdigest()
+            print(prev_hash,curr_hex)
+            if not (prev_hash == curr_hex):
+                prev_hash = curr_hex
+                print("notification sent")
+                _print_and_generate_report(details,_)
+            sleep(10)
+    except KeyboardInterrupt:
+        print('Monitoring exited safely ')
+    
 
+def getCalender(**kwargs):
+    details,brief = _getCalenderAvailability(**kwargs)
+    _print_and_generate_report(details,brief)
+
+
+##--------------For testing ----------------------##
+
+def generateRandomeString_for_testing():
+    import random
+    import string
+
+    # printing lowercase
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(10))

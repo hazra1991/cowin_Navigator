@@ -89,9 +89,3 @@ def getCentersByPin(pin,date):
         return res.json()['sessions']
     else:
         raise Exception(res.text)
-    
-
-# d = FindRecordByDistrict('odisha','cuttack')
-# r = d.getCalendeByDate('30-5-2021')
-# print(r)
-# getCentersByPin(11001,"30-5-2021")
