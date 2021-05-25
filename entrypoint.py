@@ -59,17 +59,22 @@ def _print_and_generate_report(data,v):
 def monitorAvailabitily(**kwargs):
     import hashlib
     from time import sleep
+    from utils import send_mail
     prev_hash = ""
+    sendto= 'khatiambika1@gmail.com'
+    
     try:
         while True:
             details, _ = _getCalenderAvailability(**kwargs)
             curr_hex = hashlib.md5(str(details).encode()).hexdigest()
             print(prev_hash,curr_hex)
             if not (prev_hash == curr_hex):
+                body = f"Abailable for the dates and number of centes : - {list(zip(_.keys(),_.values()))}"
                 prev_hash = curr_hex
+                send_mail(subject="Cowin-Notification",body=body,sendto=sendto,priority="1")
                 print("notification sent")
                 _print_and_generate_report(details,_)
-            sleep(10)
+            sleep(600)
     except KeyboardInterrupt:
         print('Monitoring exited safely ')
     
