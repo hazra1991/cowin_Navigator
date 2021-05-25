@@ -21,7 +21,8 @@ user_args = {'pin':pin,'state':state,'district':district,'min_age':args.age_limi
 if not args.monitor:
     getCalender(**user_args)
     
-else :
-    print('haat sala ')
-    monitorAvailabitily(**user_args)
+else:
+    email = input("Please specify the email address to sent notification to :-- ")
+    print('\t\t\-----Monitoring-------------- ')
+    monitorAvailabitily(email,**user_args)
 

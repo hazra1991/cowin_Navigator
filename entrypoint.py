@@ -56,7 +56,7 @@ def _print_and_generate_report(data,v):
     else:
         print("\n\nNO centers found for the provided date.")
 
-def monitorAvailabitily(**kwargs):
+def monitorAvailabitily(email,**kwargs):
     import hashlib
     from time import sleep
     from utils import send_mail
@@ -71,7 +71,7 @@ def monitorAvailabitily(**kwargs):
             if not (prev_hash == curr_hex):
                 body = f"Abailable for the dates and number of centes : - {list(zip(_.keys(),_.values()))}"
                 prev_hash = curr_hex
-                send_mail(subject="Cowin-Notification",body=body,sendto=sendto,priority="1")
+                send_mail(subject="Cowin-Notification",body=body,sendto=email,priority="1")
                 print("notification sent")
                 _print_and_generate_report(details,_)
             sleep(600)
