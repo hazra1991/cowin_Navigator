@@ -6,7 +6,7 @@ mygroup = my_args.add_mutually_exclusive_group( required=True)
 mygroup.add_argument("-p","--bypin",action = 'store_true', help='search via Pin')
 mygroup.add_argument('-bd','--bydistrict',action='store_true',help='search by state and district name')
 my_args.add_argument('-m','--monitor',action='store_true',help='monitors periodicaly')
-my_args.add_argument('-a','--age-limit',action="store",metavar='',choices=['18','45'],dest='age_limit',type=int,help='Specify the age [+default 1 & 2}]')
+my_args.add_argument('-a','--age-limit',action="store",metavar='',choices=[18,45],dest='age_limit',type=int,help='Specify the age [+default 1 & 2}]')
 my_args.add_argument('--date',metavar='',type = str,help='Date format \'dd-mm-yy\' [ + Default is today ]')
 my_args.add_argument('--dose',metavar = '',action='store',choices=['1','2'],help='Specify the dose to to searched[+ default is all]')
 

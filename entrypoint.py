@@ -61,8 +61,6 @@ def monitorAvailabitily(email,**kwargs):
     from time import sleep
     from utils import send_mail
     prev_hash = ""
-    sendto= 'khatiambika1@gmail.com'
-    
     try:
         while True:
             details, _ = _getCalenderAvailability(**kwargs)
