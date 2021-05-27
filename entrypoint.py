@@ -66,7 +66,7 @@ def monitorAvailabitily(email,**kwargs):
             details, _ = _getCalenderAvailability(**kwargs)
             curr_hex = hashlib.md5(str(details).encode()).hexdigest()
             print(prev_hash,curr_hex)
-            if not (prev_hash == curr_hex):
+            if not (prev_hash == curr_hex) and len(details) > 0 :
                 body = f"Abailable for the dates and number of centes : - {list(zip(_.keys(),_.values()))}"
                 prev_hash = curr_hex
                 send_mail(subject="Cowin-Notification",body=body,sendto=email,priority="1")

@@ -37,7 +37,8 @@ class FindRecordByDistrict:
             if self.state_name in self.state_list:
                  self.district_Id = self.__get_district_id(self.state_list[self.state_name],self.district_name)
             else:
-                raise Exception(f"++ state  '{s_name}'  not found")    
+                print("\n\t\t[+++++ INCORRECT STATE NAME +++++ ]\n\n")
+                raise Exception(f"\n\n++ state  '{s_name}'  not found\n\n")    
         self.state_Id =  self.state_list[self.state_name]        
 
     def __createStateFile(self):
