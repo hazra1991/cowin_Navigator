@@ -1,5 +1,6 @@
 import requests,pickle
 # from endpoints import *
+from difflib import get_close_matches # lib to return aprox match words
 
 
 # Any  User-Agent hving the word python or the programming language name will not the accepted by the API setu ,
@@ -38,7 +39,7 @@ class FindRecordByDistrict:
                  self.district_Id = self.__get_district_id(self.state_list[self.state_name],self.district_name)
             else:
                 print("\n\t\t[+++++ INCORRECT STATE NAME +++++ ]\n\n")
-                raise Exception(f"\n\n++ state  '{s_name}'  not found\n\n")    
+                raise Exception(f"\n\n[++] state  '{s_name}'  not found.Did you mean :- {get_close_matches(self.state_name,self.state_list.keys())}\n\n")    
         self.state_Id =  self.state_list[self.state_name]        
 
     def __createStateFile(self):
@@ -53,10 +54,15 @@ class FindRecordByDistrict:
 
     def __get_district_id(self,state_id,district_name):
         res =  requests.get(f"{url}{districtsApi}{state_id}",headers=headers)
+        dis=[]
         for d in res.json()['districts']:
+            dis.append(d['district_name'])
             if district_name == d['district_name'].lower():
+                del dis
                 return d['district_id']
-        raise Exception(f"Disctrict {district_name} not found")
+
+        raise Exception(f"\n\n[**]Disctrict {district_name} not found\n\n\
+        [++] unable to find the district. Similar District names :- {get_close_matches(district_name,dis,cutoff=0.5)}")
 
     def getAllCentersOnDate(self,date:str):
         print(self.state_Id)
