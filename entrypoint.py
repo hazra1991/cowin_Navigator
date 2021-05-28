@@ -35,7 +35,7 @@ def _getCalenderAvailability(pin=None,state=None,district=None,from_date=None,mi
     for i in center_list:
         for j in i['sessions']:
             if j['available_capacity'] > 0 and (min_age ==None  or j['min_age_limit'] == min_age) and (dose == None or j[f'available_capacity_dose{dose}']>0):
-                detailed_report.append({"center_name":i['name'],"center_id":i['center_id'],"date":j['date'],"address":i['address'],
+                detailed_report.append({"center_name":i['name'],"center_id":i['center_id'],"pincode":i["pincode"],"date":j['date'],"address":i['address'],
                 "vaccine_type":j['vaccine'],"dose1":j['available_capacity_dose1'],"dose2":j['available_capacity_dose2'],"min_age_limit":j['min_age_limit'],
                 "fee_type":i['fee_type'],"available_capacity":j["available_capacity"],'slots':str(j["slots"])})
                 brief_info[j['date']] = brief_info.get(j['date'],0)+1
@@ -44,7 +44,7 @@ def _getCalenderAvailability(pin=None,state=None,district=None,from_date=None,mi
 
 
 def _print_and_generate_report(data,v):
-    columun_name = ['center_name', 'center_id','date','vaccine_type', 'dose1', 'dose2', 'min_age_limit', 'fee_type', 'available_capacity', 'slots','address']
+    columun_name = ['center_name', 'center_id','pincode','date','vaccine_type', 'dose1', 'dose2', 'min_age_limit', 'fee_type', 'available_capacity', 'slots','address']
     if len(data) > 0:
         print(f'\nAbailable for the dates and number of centes : - {list(zip(v.keys(),v.values()))}')
         print('\nGenerating complete report-------------\n')
@@ -81,6 +81,29 @@ def getCalender(**kwargs):
     details,brief = _getCalenderAvailability(**kwargs)
     _print_and_generate_report(details,brief)
 
+
+def getFromPincodeList(filepath,kw):
+    with open(filepath,'r') as filedes:
+        columun_name = ['center_name', 'center_id','pincode','date','vaccine_type', 'dose1', 'dose2', 'min_age_limit', 'fee_type', 'available_capacity', 'slots','address']        
+        print('\nGenerating complete report-------------\n')
+        with open('detailed_report.csv','w',newline='') as fd:
+            writer = csv.DictWriter(fd,fieldnames=columun_name)
+            writer.writeheader()
+            c = 0
+            for i in filedes:
+                print("checking for code is := ",i.strip('\n'))
+                c +=1
+
+                if c == 88:
+                    import time
+                    time.sleep(8)
+                    c=0
+                else:
+                    data,_ = _getCalenderAvailability(pin=i.strip('\n'),**kw)
+                    if len(data) > 0 :
+                        print("writing")
+                        for row in data:
+                            writer.writerow(row)
 
 ##--------------For testing ----------------------##
 
