@@ -16,7 +16,7 @@ user_args = {'min_age':args.age_limit,'from_date':args.date,'dose':args.dose}
 pin=state=district = None
 if args.bypin:
     pin = input('Please enter the location pin number :- ')
-    user_args.udpate({'pin':pin})
+    user_args.update({'pin':pin})
 elif args.bydistrict:
     state = input('Please enter the state name:- ')
     district =input('Please enter the district name:- ')
